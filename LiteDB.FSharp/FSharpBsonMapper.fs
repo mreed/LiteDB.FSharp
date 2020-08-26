@@ -34,7 +34,6 @@ type FSharpBsonMapper() =
         else
         let withEntityMap (doc:BsonDocument)=
             let mapper = entityMappers.Item (entity.GetType())
-            //Console.WriteLine(sprintf "Member Count: %i for type %A" mapper.Members.Count (entity.GetType().Name))
             for memberMapper in mapper.Members do   
                 if not (isNull memberMapper.Serialize) then  
                     let value = memberMapper.Getter.Invoke(entity)
@@ -43,15 +42,11 @@ type FSharpBsonMapper() =
             doc
         Bson.serialize<'t> entity
         |> withEntityMap 
-    //static member createGetter entityType memberInfo =
-    //static member createSetter entityType
-    
+
     member this.createMemberMapper entityType (memberInfo: System.Reflection.PropertyInfo) =
         let name = match memberInfo.Name with
                    | "Id"|"id"|"_id"|"ID" -> "_id"
                    | _ -> memberInfo.Name
-        //let getter = createGetter entityType memberInfo
-        //let setter = createSetter entityType memberInfo
         let datatype = memberInfo.PropertyType
         let isColl = Reflection.isCollection datatype
         let mMapper = MemberMapper(

@@ -196,20 +196,33 @@ let liteDatabaseUsage mapper=
                         match doc.Id, doc.Released with
                         | 1, None -> pass()
                         | _ -> fail()
-
-        //testCase "Documents with optional Record = Some can be used" <| fun _ ->
-        //    useDatabase mapper<| fun db ->
-        //        let docs = db.GetCollection<RecordWithOptionalRecord>()
-        //        docs.Insert { Id = 1; Record = Some {Id = 1; Name = "Name"} } |> ignore
-        //        let results = docs.FindAll()
-        //        results
-        //        |> Seq.tryHead
-        //        |> function
-        //            | None -> fail()
-        //            | Some doc ->
-        //                match doc.Id, doc.Record with
-        //                | 1, Some {Id = 1; Name = "Name"} -> pass()
-        //                | _ -> fail()
+        testCase "Documents with optional Record = Some can be used" <| fun _ ->
+            useDatabase mapper<| fun db ->
+                let docs = db.GetCollection<RecordWithOptionalRecord>()
+                docs.Insert { Id = 1; Record = Some {Id = 1; Name = "Name"} } |> ignore
+                let results = docs.FindAll()
+                results
+                |> Seq.tryHead
+                |> function
+                    | None -> fail()
+                    | Some doc ->
+                        match doc.Id, doc.Record with
+                        | 1, Some {Id = 1; Name = "Name"} -> pass()
+                        | _ -> fail()
+        testCase "Try to see what happens when 2 optional Records are added" <| fun _ ->
+            useDatabase mapper <| fun db ->
+                let docs = db.GetCollection<RecordWithOptionalRecord>()
+                docs.Insert { Id = 1; Record = Some {Id = 1; Name = "Name1"}} |> ignore
+                docs.Insert { Id = 2; Record = Some {Id = 2; Name = "Name2"}} |> ignore 
+                let results = docs.FindAll()
+                results
+                |> Seq.tryFind (fun t -> t.Record.Value.Id = 1)
+                |> function 
+                    |None -> fail()
+                    |Some doc ->
+                        match doc.Id, doc.Record with
+                        | 1, Some {Id = 1; Name = "Name1"} -> pass()
+                        | _ -> fail()
 
         testCase "TryFindById extension works" <| fun _ ->
             useDatabase mapper<| fun db ->
