@@ -297,7 +297,7 @@ namespace LiteDB.FSharp
    type TypeShapeMapper() =
     inherit FSharpBsonMapper()
 
-    override self.ToObject(entityType : System.Type, entity : BsonDocument) = Bson.deserializeByType entity entityType
+    override self.ToObject(entityType : System.Type, entity : BsonDocument) = Bson.deserializeByType entityType entity
     override self.ToObject<'t>(entity : BsonDocument) =
       try
         let pickler = genPickler<'t>()

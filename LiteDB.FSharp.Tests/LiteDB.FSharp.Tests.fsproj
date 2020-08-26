@@ -14,5 +14,8 @@
     <Compile Include="Tests.InheritedType.fs" />
     <Compile Include="Tests.Runner.fs" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="LiteDB" Version="5.0.9" />
+  </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

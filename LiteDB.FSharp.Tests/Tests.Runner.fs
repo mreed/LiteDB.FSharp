@@ -46,7 +46,7 @@ let main argv =
     let tests =
         testList "Parameterized tests" [
             liteDbTests bsonJsonMapper "JSON Mapper Tests"
-            liteDbTests typeShapeMapper "TypeShape Mapper Tests"
+            //liteDbTests typeShapeMapper "TypeShape Mapper Tests"
         ]
 
     runTests testConfig tests

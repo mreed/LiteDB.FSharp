@@ -48,47 +48,47 @@ module Extensions =
             collection.Find(query)
 
         /// Executes a full search using the Where query
-        member collection.fullSearch<'t, 'u> (expr: Expr<'t -> 'u>) (pred: 'u -> bool) =
-            match expr with
-            | Lambda(_, PropertyGet(_, propInfo, [])) ->
-                let propName =
-                    match propInfo.Name with
-                    | ("Id" | "id" | "ID") -> "_id"
-                    | _ -> propInfo.Name
-                let query =
-                    // TODO: Does not compile. The static Where() method is gone.
-                    Query.Where(propName, fun bsonValue ->
-                        bsonValue
-                        |> Bson.deserializeField<'u>
-                        |> pred)
-                collection.Find(query)
-            | _ ->
-                let expression = sprintf "%A" expr
-                failwithf "Could not recognize the given expression \n%s\n, it should a simple lambda to select a property, for example: <@ fun record -> record.property @>" expression
+        //member collection.fullSearch<'t, 'u> (expr: Expr<'t -> 'u>) (pred: 'u -> bool) =
+        //    match expr with
+        //    | Lambda(_, PropertyGet(_, propInfo, [])) ->
+        //        let propName =
+        //            match propInfo.Name with
+        //            | ("Id" | "id" | "ID") -> "_id"
+        //            | _ -> propInfo.Name
+        //        let query =
+        //            // TODO: Does not compile. The static Where() method is gone.
+        //            Query.Where(propName, fun bsonValue ->
+        //                bsonValue
+        //                |> Bson.deserializeField<'u>
+        //                |> pred)
+        //        collection.Find(query)
+        //    | _ ->
+        //        let expression = sprintf "%A" expr
+        //        failwithf "Could not recognize the given expression \n%s\n, it should a simple lambda to select a property, for example: <@ fun record -> record.property @>" expression
 
-        /// Creates a Query for a full search using a selector expression like `<@ fun record -> record.Name @>` and predicate
-        member collection.where<'t, 'u> (expr: Expr<'t -> 'u>) (pred: 'u -> bool) =
-            match expr with
-                | Lambda(_, PropertyGet(_, propInfo, [])) ->
-                    let propName =
-                        match propInfo.Name with
-                        | ("Id" | "id" | "ID") -> "_id"
-                        | _ -> propInfo.Name
+        ///// Creates a Query for a full search using a selector expression like `<@ fun record -> record.Name @>` and predicate
+        //member collection.where<'t, 'u> (expr: Expr<'t -> 'u>) (pred: 'u -> bool) =
+        //    match expr with
+        //        | Lambda(_, PropertyGet(_, propInfo, [])) ->
+        //            let propName =
+        //                match propInfo.Name with
+        //                | ("Id" | "id" | "ID") -> "_id"
+        //                | _ -> propInfo.Name
 
-                    // TODO: Does not compile. The static Where() method is gone.
-                    Query.Where(propName, fun bsonValue ->
-                        bsonValue
-                        |> Bson.deserializeField<'u>
-                        |> pred)
-                | _ ->
-                    let expression = sprintf "%A" expr
-                    failwithf "Could not recognize the given expression \n%s\n, it should a simple lambda to select a property, for example: <@ fun record -> record.property @>" expression
+        //            // TODO: Does not compile. The static Where() method is gone.
+        //            Query.Where(propName, fun bsonValue ->
+        //                bsonValue
+        //                |> Bson.deserializeField<'u>
+        //                |> pred)
+        //        | _ ->
+        //            let expression = sprintf "%A" expr
+        //            failwithf "Could not recognize the given expression \n%s\n, it should a simple lambda to select a property, for example: <@ fun record -> record.property @>" expression
 
         /// Remove all document based on quoted expression query. Returns removed document counts
         member collection.delete<'t> ([<ReflectedDefinition>] expr: Expr<'t -> bool>) =
             let query = Query.createQueryFromExpr expr
             // TODO: Does not compile. The Delete() overload taking a Query is gone.
-            collection.Delete(query)
+            collection.DeleteMany(query)
 
     type LiteRepository with
         ///Create a new permanent index in all documents inside this collections if index not exists already.

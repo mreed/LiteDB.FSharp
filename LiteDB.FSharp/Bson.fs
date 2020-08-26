@@ -77,15 +77,6 @@ module Bson =
         then
             entity :> obj
         else
-            let getCollectionElementType (collectionType:Type)=
-                let typeNames = ["FSharpList`1";"IEnumerable`1";"List`"; "List`1"; "IList`1"; "FSharpOption`1"]
-                let typeName = collectionType.Name
-                if List.contains typeName typeNames then
-                    collectionType.GetGenericArguments().[0]
-                else if collectionType.IsArray then
-                    collectionType.GetElementType()
-                else failwithf "Could not extract element type from collection of type %s"  collectionType.FullName           
-            
             let getKeyFieldName (entityType: Type)= 
               if FSharpType.IsRecord entityType 
               then FSharpType.GetRecordFields entityType 
@@ -127,7 +118,7 @@ module Bson =
                             // if property is BsonArray then loop through each element
                             // and if that element is a record, then re-write _id back to original
                             let collectionType = entityType.GetProperty(y).PropertyType
-                            let elementType = getCollectionElementType collectionType
+                            let elementType = Reflection.getCollectionElementType collectionType
                             if FSharpType.IsRecord elementType then
                                 let docKey = getKeyFieldName elementType
                                 for bson in bsonArray do
